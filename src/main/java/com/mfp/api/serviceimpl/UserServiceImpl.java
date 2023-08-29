@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import com.mfp.api.dao.UserDao;
 import com.mfp.api.entity.Role;
 import com.mfp.api.entity.User;
+import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.security.CustomUserDetail;
 import com.mfp.api.service.UserService;
+import com.mfp.api.validation.ValidateRole;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDao dao;
+	
+	@Autowired
+	private ValidateRole validateRole;
 
 	@Override
 	public boolean addUser(User user) {
@@ -82,7 +87,22 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Role addRole(Role role) {
-		return dao.addRole(role);
+		
+		boolean isValid = this.validateRole.validateRole(role);
+		
+		if(isValid) {
+			 Role savedRole = this.dao.addRole(role);
+			 if(savedRole == null) {
+				 throw new SomethingWentWrongException("Given Role Already Exist..." + "\n" + "Role ID : " + role.getId() + "\n" + "Role Name : " + role.getName());
+					
+			 }else {
+				 return savedRole;
+			 }
+		}else {
+			throw new SomethingWentWrongException("Please Enter Valid Role Name Or Id.." + "\n" + "role id : " + role.getId() + "\n" 
+															+ "role name : " + role.getName() + "\n"
+															+	"Default Message : Role_Name shold be starts with 'ROLE_ ' also should be starts with charachers only ");
+		}
 	}
 
 	@Override

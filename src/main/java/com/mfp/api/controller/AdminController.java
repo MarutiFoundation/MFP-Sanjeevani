@@ -1,11 +1,12 @@
 package com.mfp.api.controller;
 
-import java.sql.Date;
+import java.sql.Date; 
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mfp.api.entity.Role;
 import com.mfp.api.entity.User;
+import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.service.UserService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(value = "/admin")
+@Api(tags = "Admin", description = "Endpoints for managing APIS Controlled By ADMIN")
 public class AdminController {
 
 	private static Logger LOG = LogManager.getLogger(AdminController.class);
@@ -49,9 +57,22 @@ public class AdminController {
 		return null;
 	}
 
+	
+    @ApiOperation("Get a specific entity by ID")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Successfully Saved The Role"),
+        @ApiResponse(code = 409, message = "Role Already Exist In DataBase"),
+        @ApiResponse(code = 404, message = "Invadid Data")
+        
+    })
 	@PostMapping(value = "/add-role")
 	public ResponseEntity<Object> addRole(@RequestBody Role role) {
-		return null;
+		Role addedRole = userService.addRole(role);
+		if(addedRole != null) {
+			return new ResponseEntity<>(addedRole, HttpStatus.OK);
+		}else {
+			throw new SomethingWentWrongException("Role Not Saved...");
+		}
 	}
 
 	@GetMapping(value = "/get-role-by-id/{roleId}")

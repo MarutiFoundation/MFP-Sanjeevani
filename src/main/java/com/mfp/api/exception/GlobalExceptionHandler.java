@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ResourceAlreadyExistsException.class)
 	public ResponseEntity<String> resourceAlreadyExists(ResourceAlreadyExistsException ex) {
 
-		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.OK);
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.CONFLICT);
 	}
 	
 	@ExceptionHandler(ResourceNotFoundException.class)
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(SomethingWentWrongException.class)
 	public ResponseEntity<String> somethingWentWrongException(SomethingWentWrongException ex) {
 
-		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.OK);
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 }
