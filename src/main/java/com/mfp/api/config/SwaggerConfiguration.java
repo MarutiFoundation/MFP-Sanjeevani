@@ -35,8 +35,6 @@ public class SwaggerConfiguration extends WebMvcConfigurationSupport {
 	      .paths(PathSelectors.any())
 	      .build();
 	}
-
-	
 	
 	private ApiKey apiKey() { 
 	    return new ApiKey("JWT", "Authorization", "header"); 

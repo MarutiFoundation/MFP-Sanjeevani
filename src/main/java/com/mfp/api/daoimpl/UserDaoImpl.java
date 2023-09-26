@@ -18,6 +18,8 @@ import com.mfp.api.dao.UserDao;
 import com.mfp.api.entity.Otp;
 import com.mfp.api.entity.Role;
 import com.mfp.api.entity.User;
+import com.mfp.api.exception.ResourceAlreadyExistsException;
+import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.security.CustomUserDetail;
 
 @Repository
@@ -145,21 +147,36 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Role addRole(Role role) {
-		try {
+		Role check;
+		try{
 			Session session = sf.getCurrentSession();
-			session.save(role);
-		} catch (PersistenceException e) {
-			return null;
+			check = this.getRoleById(role.getId());
+			if(check != null) {
+				check = null;
+			
+			}else {
+				session.save(role);
+				return role;
+			}
 		}
 		catch (Exception e) {
 			LOG.info(e.getMessage());
+			check = null;
 		}
-		return role;
+		return check;
 	}
 
 	@Override
 	public Role getRoleById(int roleId) {
-		return null;
+		Role role;
+		try {
+			Session session = sf.getCurrentSession();
+			role = session.get(Role.class, roleId);			
+		}catch (Exception e) {
+			LOG.info(e.getMessage());
+			role = null;
+		}
+		return role;
 	}
 
 }
