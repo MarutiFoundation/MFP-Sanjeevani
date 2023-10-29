@@ -7,6 +7,7 @@ import javax.persistence.PersistenceException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jfree.util.Log;
@@ -33,9 +34,22 @@ public class UserDaoImpl implements UserDao {
 	public PasswordEncoder passwordEncoder;
 	
 	@Override
-	public boolean addUser(User user) {
-		return false;
+	public boolean addUser(User user) { 
+		Session session = sf.getCurrentSession();
+		boolean status;
+		
+		try {
+			session.save(user);
+			status = true;
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			status  = false;
+		}
+	
+		return status;
+		
 	}
+
 
 	@Override
 	public User loginUser(User user) {
@@ -101,13 +115,34 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public User getUserById(String id) {
-		return null;
+		Session session = sf.getCurrentSession();
+		User user;
+		
+		try {
+			
+			user = session.get(User.class, id);
+		
+		}catch (Exception e) {
+			LOG.error(e.getMessage());
+			user = null;
+		}
+		return user;
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public List<User> getAllUsers() {
-		return null;
+		List list;
+		Session currentSession = sf.getCurrentSession();
+		
+		try {
+			Criteria criteria = currentSession.createCriteria(User.class);
+			list = criteria.list();
+		}catch (Exception e) {
+			LOG.error(e);
+			list = null;
+		}
+		return list;
 	}
 
 	@Override

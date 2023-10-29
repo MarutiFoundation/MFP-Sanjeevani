@@ -36,14 +36,14 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<String> badCredentialsException(BadCredentialsException ex){
-		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.OK);
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 
 	}
 	
 	@ExceptionHandler(InvalidCredentialsException.class)
 	public ResponseEntity<String> invalidCredientials(InvalidCredentialsException ex) {
 
-		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.OK);
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ResourceAlreadyExistsException.class)
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<String> resourceNotFoundException(ResourceNotFoundException ex) {
 
-		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.OK);
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(SomethingWentWrongException.class)
