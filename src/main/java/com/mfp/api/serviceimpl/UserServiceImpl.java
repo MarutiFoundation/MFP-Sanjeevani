@@ -1,8 +1,13 @@
 package com.mfp.api.serviceimpl;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +18,9 @@ import com.mfp.api.entity.User;
 import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.security.CustomUserDetail;
 import com.mfp.api.service.UserService;
+import com.mfp.api.utility.UserFieldChecker;
 import com.mfp.api.validation.ValidateRole;
+import com.mfp.api.validation.ValidateUser;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,10 +33,56 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private ValidateRole validateRole;
+	
+	@Autowired
+	private ValidateUser validateUser;
+	
+	@Autowired
+	private UserFieldChecker checker;
 
 	@Override
 	public boolean addUser(User user) {
-		return false;
+			
+		Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String formattedTimestamp = sdf.format(currentTimestamp);
+		try {
+			java.util.Date utilDate = sdf.parse(formattedTimestamp);
+			java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+			user.setCreatedDate(sqlDate);	// SETTING DATE IN USER
+		} catch (ParseException e) {
+			Log.error(e.getMessage());
+		}
+
+		String encodePassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodePassword);	//SETTING ENCODED PASSWORD IN USER
+		
+		 boolean exists = checker.userAlreadyExists(user);
+		 
+		 if(exists) {
+			 throw new SomethingWentWrongException("Something Went Wrong" + "\n" + "User Already Exist, UserName : " + user.getUsername());
+		 }else {
+			 Map<String, String> isValidate = validateUser.validateUser(user);
+				
+				if(isValidate.isEmpty()) {
+					// method call UserFieldChecker
+					
+					Map<String, Map<String, String>> duplicateFields = checker.duplicateFields(user);
+					if(duplicateFields.isEmpty()) {
+						boolean addedUser = dao.addUser(user);
+						if(addedUser) {
+							return true;
+						}else {
+							throw new SomethingWentWrongException("User Not Added....");
+						}
+					}else {
+						throw new SomethingWentWrongException("Unique Fileds Required .." + duplicateFields);
+					}
+					
+				}else{
+					throw new SomethingWentWrongException(isValidate + "\n" + "Please Enter Valid Details");
+				}
+		 }
 	}
 
 	@Override

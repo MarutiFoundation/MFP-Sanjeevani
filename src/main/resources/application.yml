@@ -1,7 +1,7 @@
 db:
   driver: com.mysql.cj.jdbc.Driver
-  password: Maruti
-  url: jdbc:mysql://localhost:3306/MFP-Sanjeevani
+  password: root
+  url: jdbc:mysql://localhost:3307/MFP-Sanjeevani
   username: root
   
 entitymanager:

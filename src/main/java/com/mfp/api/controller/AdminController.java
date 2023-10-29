@@ -39,7 +39,12 @@ public class AdminController {
 
 	@PostMapping("/add-user")
 	public ResponseEntity<Boolean> registerUser(@RequestBody User user) {
-		return null;
+		boolean isAdded = userService.addUser(user);
+		if(isAdded) {
+			return new ResponseEntity<>(isAdded, HttpStatus.OK);
+		}else {
+			throw new SomethingWentWrongException("User Not Saved...");
+		}
 	}
 
 	@DeleteMapping(value = "/delete-user/{id}")
