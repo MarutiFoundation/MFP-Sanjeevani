@@ -2,6 +2,7 @@ package com.mfp.api.dao;
 
 import java.sql.Date; 
 import java.util.List;
+import java.util.Optional;
 
 import com.mfp.api.entity.Otp;
 import com.mfp.api.entity.Role;
@@ -15,7 +16,7 @@ public interface UserDao {
 
 	User loginUser(User user);
 
-	boolean deleteUserById(String id);
+	boolean deleteUserByUserName(String userName);
 
 	User getUserById(String id);
 
@@ -38,4 +39,13 @@ public interface UserDao {
 	public boolean saveOtp(Otp otp);
 
 	public Otp getOtpByUser(String userId);
+	public boolean deleteUserById( int Id);
+	
+	public Optional<User> findByUserName(String userName);
+
+	public void delete(User user);
+	
+	
+
+	
 }

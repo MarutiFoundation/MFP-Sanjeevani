@@ -47,10 +47,15 @@ public class AdminController {
 		}
 	}
 
-	@DeleteMapping(value = "/delete-user/{id}")
-	public ResponseEntity<Boolean> deleteUser(@PathVariable String id) {
-		return null;
-	}
+	@DeleteMapping(value = "/delete-user/{userName}")
+	public ResponseEntity<String> deleteUser(@PathVariable String userName) {
+		if(userName!= null && userService.deleteUserByUserName(userName)) {
+			return ResponseEntity.ok("User with userName " + userName + " deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with userName " + userName + " not found.");
+        }
+    }
+	
 
 	@PutMapping("/update-user")
 	public ResponseEntity<User> updateUser(@RequestBody User user) {

@@ -2,6 +2,7 @@ package com.mfp.api.daoimpl;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.PersistenceException;
 
@@ -91,26 +92,20 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public boolean deleteUserById(String id) {
+	public boolean deleteUserByUserName(String userName) {
 		Session session = sf.getCurrentSession();
-		
-		User usr = null;
-		try {
-			usr = session.get(User.class, id);
-					
-			if (usr != null) {
-				session.delete(usr);
-				return true;
-			}
-			Log.info(usr);
-			return false;
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.info(usr);
-		}
-		
-		return false;
+		User user = null;
+	    try {
+	        user = session.byNaturalId(User.class).using("userName", userName).load();
+	        if (user != null) {
+	            session.delete(user);
+	            return true;
+	        }
+	        return false;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 
 	@Override
@@ -214,4 +209,31 @@ public class UserDaoImpl implements UserDao {
 		return role;
 	}
 
+
+	
+
+	
+
+	@Override
+	public void delete(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public boolean deleteUserById(int Id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public Optional<User> findByUserName(String userName) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
+
+	
 }

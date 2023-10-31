@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private UserFieldChecker checker;
+	
+	
 
 	@Override
 	public boolean addUser(User user) {
@@ -97,9 +100,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean deleteUserById(String id) {
-		return dao.deleteUserById(id);
-	}
+	public boolean deleteUserByUserName(String userName) {
+		   Optional<User> userOptional = dao.findByUserName(userName);
+	        if (userOptional.isPresent()) {
+	            dao.delete(userOptional.get());
+	            return true;
+	        }
+	        return false;
+	    }
+	
+		
+		
+	
 
 	@Override
 	public User getUserById(String id) {
@@ -167,4 +179,11 @@ public class UserServiceImpl implements UserService {
 	public String generateReport() {
 		return null;
 	}
+
+	@Override
+	public boolean deleteUserById(int Id) {
+		return false;
+	}
+
+	
 }
