@@ -63,5 +63,11 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(InvalidInputException.class)
+	public ResponseEntity<String> handleInvalidInputException(InvalidInputException ex) {
+
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+	}
 
 }

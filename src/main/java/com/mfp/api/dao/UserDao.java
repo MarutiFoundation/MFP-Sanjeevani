@@ -16,7 +16,7 @@ public interface UserDao {
 
 	User loginUser(User user);
 
-	boolean deleteUserByUserName(String userName);
+	String deleteUser(String userName);
 
 	User getUserById(String id);
 
@@ -39,7 +39,6 @@ public interface UserDao {
 	public boolean saveOtp(Otp otp);
 
 	public Otp getOtpByUser(String userId);
-	public boolean deleteUserById( int Id);
 	
 	public Optional<User> findByUserName(String userName);
 
