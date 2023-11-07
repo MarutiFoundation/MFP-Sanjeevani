@@ -100,20 +100,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean deleteUserByUserName(String userName) {
-		   Optional<User> userOptional = dao.findByUserName(userName);
-	        if (userOptional.isPresent()) {
-	            dao.delete(userOptional.get());
-	            return true;
-	        }
-	        return false;
-	    }
-	
-		
-		
-	
-
-	@Override
 	public User getUserById(String id) {
 		return dao.getUserById(id);
 	}
@@ -181,8 +167,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean deleteUserById(int Id) {
-		return false;
+	public String deleteUser(String userName) {
+		return this.dao.deleteUser(userName);
+		
 	}
 
 	

@@ -4,14 +4,17 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.jfree.util.Log;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -20,8 +23,6 @@ import com.mfp.api.dao.UserDao;
 import com.mfp.api.entity.Otp;
 import com.mfp.api.entity.Role;
 import com.mfp.api.entity.User;
-import com.mfp.api.exception.ResourceAlreadyExistsException;
-import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.security.CustomUserDetail;
 
 @Repository
@@ -92,19 +93,28 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public boolean deleteUserByUserName(String userName) {
+	public String deleteUser(String userName) {
 		Session session = sf.getCurrentSession();
-		User user = null;
-	    try {
-	        user = session.byNaturalId(User.class).using("userName", userName).load();
-	        if (user != null) {
-	            session.delete(user);
-	            return true;
-	        }
-	        return false;
+		try {
+			
+			 CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+		     CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		     Root<User> root = criteriaQuery.from(User.class);
+
+		     criteriaQuery.select(root);
+		     criteriaQuery.where(criteriaBuilder.equal(root.get("username"), userName));
+
+		     List<User> users = session.createQuery(criteriaQuery).getResultList();
+
+		        if (users.size() == 1) {
+		        	session.delete(users.get(0));
+		            return "success";
+		        } else {
+		           return "failed";
+		        }	        
 	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
+	        LOG.error(e);
+	        return "failed";
 	    }
 	}
 
@@ -218,13 +228,6 @@ public class UserDaoImpl implements UserDao {
 	public void delete(User user) {
 		// TODO Auto-generated method stub
 		
-	}
-
-
-	@Override
-	public boolean deleteUserById(int Id) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 

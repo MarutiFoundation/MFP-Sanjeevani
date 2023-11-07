@@ -110,7 +110,7 @@ public class ValidateUser {
 			errorMessage.put("Type Should Not Be Null", user.getType());
 		}
 		
-		if(user.getAnswer().isEmpty() && user.getAnswer().isBlank()) {
+		if(user.getAnswer().isEmpty() /*&& user.getAnswer().isBlank()*/) {
 			errorMessage.put("Answer Should Not Be Null", user.getAnswer());
 		}
 		

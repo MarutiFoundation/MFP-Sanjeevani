@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.mfp.api.constants.JwtConstatnt;
+import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.utility.JwtUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -39,7 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authToken = header.replace(JwtConstatnt.TOKEN_PREFIX,"");
             try {
                 username = jwtTokenUtil.getUsernameFromToken(authToken);
-                //System.out.println("User from token "+username);
             } catch (IllegalArgumentException e) {
             	 System.err.println("an error occured during getting username from token");
             } catch (ExpiredJwtException e) {

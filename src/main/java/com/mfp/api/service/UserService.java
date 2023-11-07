@@ -17,7 +17,7 @@ public interface UserService {
 
 	User loginUser(User user);
 
-	 boolean deleteUserByUserName(String UserName);
+	String deleteUser(String userName);
 
 	User getUserById(String id);
 
@@ -39,7 +39,7 @@ public interface UserService {
 	
 	
 	public String generateReport();
-	public boolean deleteUserById(int Id);
+
 	
 	
 	

@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mfp.api.entity.Role;
 import com.mfp.api.entity.User;
+import com.mfp.api.exception.InvalidInputException;
+import com.mfp.api.exception.ResourceNotFoundException;
 import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.service.UserService;
+import com.mfp.api.utility.ValidateInputData;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,13 +50,27 @@ public class AdminController {
 		}
 	}
 
+	
+    @ApiOperation("Delete Specific User Record By UserName")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Successfully Deleted The User"),
+        @ApiResponse(code = 400, message = "Input Data is empty"),
+        @ApiResponse(code = 404, message = "User Not Found")
+        
+    })
 	@DeleteMapping(value = "/delete-user/{userName}")
 	public ResponseEntity<String> deleteUser(@PathVariable String userName) {
-		if(userName!= null && userService.deleteUserByUserName(userName)) {
+		if(ValidateInputData.validateUserName(userName)) {
+			String message = this.userService.deleteUser(userName);
+			if(message.equals("success")) {
 			return ResponseEntity.ok("User with userName " + userName + " deleted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with userName " + userName + " not found.");
-        }
+			}else {
+				throw new ResourceNotFoundException("USER NOT FOUND...."+ "|" + "USERNAME: " + userName);
+			}
+		}else {
+			throw new InvalidInputException("User Name Should Not Be Empty : " + userName);
+			
+		}
     }
 	
 
