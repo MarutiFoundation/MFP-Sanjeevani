@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.mfp.api.dao.UserDao;
 import com.mfp.api.entity.Role;
 import com.mfp.api.entity.User;
+import com.mfp.api.exception.ResourceNotFoundException;
 import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.security.CustomUserDetail;
 import com.mfp.api.service.UserService;

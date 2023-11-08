@@ -104,7 +104,13 @@ public class AdminController {
 
 	@GetMapping(value = "/get-role-by-id/{roleId}")
 	public ResponseEntity<Role> getRoleById(@PathVariable int roleId) {
-		return null;
+		Role role=userService.getRoleById(roleId);
+		if(role!= null) {
+			return new ResponseEntity<>(role, HttpStatus.FOUND);
+		}
+		else {
+			throw new ResourceNotFoundException("RESOURCE NOT FOUND FOR ID : " + roleId);
+		}
 	}
 
 	@GetMapping(value = "/get-total-count-of user")
