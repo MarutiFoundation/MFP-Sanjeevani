@@ -81,7 +81,12 @@ public class AdminController {
 
 	@GetMapping(value = "get-all-user", produces = "application/json")
 	public ResponseEntity<List<User>> getAllAdmin() {
-		return null;
+		List<User>list=userService.getAllUsers();
+		if(list != null ) {
+			return new ResponseEntity<>(list, HttpStatus.OK);
+		} else {
+			 throw new ResourceNotFoundException("user not found");	
+		}
 	}
 
 	
@@ -115,6 +120,8 @@ public class AdminController {
 
 	@GetMapping(value = "/get-total-count-of user")
 	public ResponseEntity<Long> getUsersTotalCounts() {
+		Long count= userService.getUsersTotalCounts();
+		
 		return null;
 	}
 
