@@ -1,6 +1,6 @@
 package com.mfp.api.controller;
 
-import java.sql.Date; 
+import java.sql.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,36 +43,33 @@ public class AdminController {
 	@PostMapping("/add-user")
 	public ResponseEntity<Boolean> registerUser(@RequestBody User user) {
 		boolean isAdded = userService.addUser(user);
-		if(isAdded) {
+		if (isAdded) {
 			return new ResponseEntity<>(isAdded, HttpStatus.OK);
-		}else {
+		} else {
 			throw new SomethingWentWrongException("User Not Saved...");
 		}
 	}
 
-	
-    @ApiOperation("Delete Specific User Record By UserName")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "Successfully Deleted The User"),
-        @ApiResponse(code = 400, message = "Input Data is empty"),
-        @ApiResponse(code = 404, message = "User Not Found")
-        
-    })
+	@ApiOperation("Delete Specific User Record By UserName")
+	@ApiResponses({ @ApiResponse(code = 200, message = "Successfully Deleted The User"),
+			@ApiResponse(code = 400, message = "Input Data is empty"),
+			@ApiResponse(code = 404, message = "User Not Found")
+
+	})
 	@DeleteMapping(value = "/delete-user/{userName}")
 	public ResponseEntity<String> deleteUser(@PathVariable String userName) {
-		if(ValidateInputData.validateUserName(userName)) {
+		if (ValidateInputData.validateUserName(userName)) {
 			String message = this.userService.deleteUser(userName);
-			if(message.equals("success")) {
-			return ResponseEntity.ok("User with userName " + userName + " deleted successfully.");
-			}else {
-				throw new ResourceNotFoundException("USER NOT FOUND...."+ "|" + "USERNAME: " + userName);
+			if (message.equals("success")) {
+				return ResponseEntity.ok("User with userName " + userName + " deleted successfully.");
+			} else {
+				throw new ResourceNotFoundException("USER NOT FOUND...." + "|" + "USERNAME: " + userName);
 			}
-		}else {
+		} else {
 			throw new InvalidInputException("User Name Should Not Be Empty : " + userName);
-			
+
 		}
-    }
-	
+	}
 
 	@PutMapping("/update-user")
 	public ResponseEntity<User> updateUser(@RequestBody User user) {
@@ -81,47 +78,44 @@ public class AdminController {
 
 	@GetMapping(value = "get-all-user", produces = "application/json")
 	public ResponseEntity<List<User>> getAllAdmin() {
-		List<User>list=userService.getAllUsers();
-		if(list != null ) {
+		List<User> list = userService.getAllUsers();
+		if (list != null) {
 			return new ResponseEntity<>(list, HttpStatus.OK);
 		} else {
-			 throw new ResourceNotFoundException("user not found");	
+			throw new ResourceNotFoundException("user not found");
 		}
 	}
 
-	
-    @ApiOperation("Get a specific entity by ID")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "Successfully Saved The Role"),
-        @ApiResponse(code = 409, message = "Role Already Exist In DataBase"),
-        @ApiResponse(code = 404, message = "Invadid Data")
-        
-    })
+	@ApiOperation("Get a specific entity by ID")
+	@ApiResponses({ @ApiResponse(code = 200, message = "Successfully Saved The Role"),
+			@ApiResponse(code = 409, message = "Role Already Exist In DataBase"),
+			@ApiResponse(code = 404, message = "Invadid Data")
+
+	})
 	@PostMapping(value = "/add-role")
 	public ResponseEntity<Object> addRole(@RequestBody Role role) {
 		Role addedRole = userService.addRole(role);
-		if(addedRole != null) {
+		if (addedRole != null) {
 			return new ResponseEntity<>(addedRole, HttpStatus.OK);
-		}else {
+		} else {
 			throw new SomethingWentWrongException("Role Not Saved...");
 		}
 	}
 
 	@GetMapping(value = "/get-role-by-id/{roleId}")
 	public ResponseEntity<Role> getRoleById(@PathVariable int roleId) {
-		Role role=userService.getRoleById(roleId);
-		if(role!= null) {
+		Role role = userService.getRoleById(roleId);
+		if (role != null) {
 			return new ResponseEntity<>(role, HttpStatus.FOUND);
-		}
-		else {
+		} else {
 			throw new ResourceNotFoundException("RESOURCE NOT FOUND FOR ID : " + roleId);
 		}
 	}
 
 	@GetMapping(value = "/get-total-count-of user")
 	public ResponseEntity<Long> getUsersTotalCounts() {
-		Long count= userService.getUsersTotalCounts();
-		
+		Long count = userService.getUsersTotalCounts();
+
 		return null;
 	}
 
@@ -130,9 +124,17 @@ public class AdminController {
 		return null;
 	}
 
-	@GetMapping(value = "/get-total-count-of-user-by-date-and-type//{date}/{type}")
+	@GetMapping(value = "/get-total-count-of-user-by-date-and-type/{date}/{type}")
 	public ResponseEntity<Long> getUserCountByDateAndType(@PathVariable Date date, @PathVariable String type) {
-		return null;
+
+		Long countByDateAndType = userService.getUserCountByDateAndType(date, type);
+
+		if (countByDateAndType > 0) {
+			return new ResponseEntity<>(countByDateAndType, HttpStatus.OK);
+		} else {
+			throw new ResourceNotFoundException("user not exist for " + "type " + type + "date" + date);
+		}
+
 	}
 
 	@GetMapping(value = "/get-user-by-firtname/{firstName}", produces = "application/json")

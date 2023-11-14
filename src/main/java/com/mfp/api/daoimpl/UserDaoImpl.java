@@ -6,12 +6,14 @@ import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -169,9 +171,32 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Long getUserCountByDateAndType(Date registeredDate, String type) {
-		return null;
-	}
+		Session currentSession = sf.getCurrentSession();
+		
+		try  {
+            CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
+            CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+            Root<User> root = criteriaQuery.from(User.class);
 
+            // Constructing the WHERE clause
+            Predicate predicate = criteriaBuilder.and(
+                    criteriaBuilder.equal(root.get("createdDate"),registeredDate),
+                    criteriaBuilder.equal(root.get("type"), type)
+            );
+
+            // Selecting the count
+            criteriaQuery.select(criteriaBuilder.count(root)).where(predicate);
+
+            // Executing the query
+            Query<Long> query = currentSession.createQuery(criteriaQuery);
+            return query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle the exception according to your application's needs
+            return 0L; // Return -1 to indicate an error
+        }
+	}
+		
+	
 	@Override
 	public List<User> getUserByFirstName(String firstName) {
 		return null;
