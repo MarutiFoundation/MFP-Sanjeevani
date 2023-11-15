@@ -11,6 +11,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -33,24 +34,23 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	public PasswordEncoder passwordEncoder;
-	
+
 	@Override
-	public boolean addUser(User user) { 
+	public boolean addUser(User user) {
 		Session session = sf.getCurrentSession();
 		boolean status;
-		
+
 		try {
 			session.save(user);
 			status = true;
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
-			status  = false;
+			status = false;
 		}
-	
-		return status;
-		
-	}
 
+		return status;
+
+	}
 
 	@Override
 	public User loginUser(User user) {
@@ -95,63 +95,62 @@ public class UserDaoImpl implements UserDao {
 	public String deleteUser(String userName) {
 		Session session = sf.getCurrentSession();
 		try {
-			
-			 CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-		     CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-		     Root<User> root = criteriaQuery.from(User.class);
 
-		     criteriaQuery.select(root);
-		     criteriaQuery.where(criteriaBuilder.equal(root.get("username"), userName));
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+			Root<User> root = criteriaQuery.from(User.class);
 
-		     List<User> users = session.createQuery(criteriaQuery).getResultList();
+			criteriaQuery.select(root);
+			criteriaQuery.where(criteriaBuilder.equal(root.get("username"), userName));
 
-		        if (users.size() == 1) {
-		        	session.delete(users.get(0));
-		            return "success";
-		        } else {
-		           return "failed";
-		        }	        
-	    } catch (Exception e) {
-	        LOG.error(e);
-	        return "failed";
-	    }
+			List<User> users = session.createQuery(criteriaQuery).getResultList();
+
+			if (users.size() == 1) {
+				session.delete(users.get(0));
+				return "success";
+			} else {
+				return "failed";
+			}
+		} catch (Exception e) {
+			LOG.error(e);
+			return "failed";
+		}
 	}
 
 	@Override
 	public User getUserById(String id) {
 		Session session = sf.getCurrentSession();
 		User user;
-		
+
 		try {
-			
+
 			user = session.get(User.class, id);
-		
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			LOG.error(e.getMessage());
 			user = null;
 		}
 		return user;
 	}
 
-
 	@Override
-	public List<User> getAllUsers() {  
+	public List<User> getAllUsers() {
 		List<User> users = null;
-	
+
 		Session currentSession = sf.getCurrentSession();
-		
+
 		try {
 			CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
 			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 			Root<User> root = criteriaQuery.from(User.class);
 			criteriaQuery.select(root);
-			//return users; // if no record found in DB
+			// return users; // if no record found in DB
 			return currentSession.createQuery(criteriaQuery).getResultList();
-		}catch (Exception e) {		
+		} catch (Exception e) {
 			LOG.error(e);
 			return users;
 		}
-		
+
 	}
 
 	@Override
@@ -166,37 +165,53 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Long getUsersTotalCounts(String type) {
-		return null;
+
+		Session currentSession = sf.getCurrentSession();
+
+		try {
+			CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
+			CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+			Root<User> root = criteriaQuery.from(User.class); // SELECT * FROM USER
+
+			criteriaQuery.select(criteriaBuilder.count(root)).where(criteriaBuilder.equal(root.get("type"), type));
+
+			return currentSession.createQuery(criteriaQuery).getSingleResult();
+
+		}
+
+		catch (Exception e) {
+			LOG.error(e);
+			return 0L;
+		}
+
 	}
 
 	@Override
 	public Long getUserCountByDateAndType(Date registeredDate, String type) {
 		Session currentSession = sf.getCurrentSession();
-		
-		try  {
-            CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
-            CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-            Root<User> root = criteriaQuery.from(User.class);
 
-            // Constructing the WHERE clause
-            Predicate predicate = criteriaBuilder.and(
-                    criteriaBuilder.equal(root.get("createdDate"),registeredDate),
-                    criteriaBuilder.equal(root.get("type"), type)
-            );
+		try {
+			CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
+			CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+			Root<User> root = criteriaQuery.from(User.class);
 
-            // Selecting the count
-            criteriaQuery.select(criteriaBuilder.count(root)).where(predicate);
+			// Constructing the WHERE clause
+			Predicate predicate = criteriaBuilder.and(criteriaBuilder.equal(root.get("createdDate"), registeredDate),
+					criteriaBuilder.equal(root.get("type"), type));
 
-            // Executing the query
-            Query<Long> query = currentSession.createQuery(criteriaQuery);
-            return query.getSingleResult();
-        } catch (Exception e) {
-            e.printStackTrace(); // Handle the exception according to your application's needs
-            return 0L; // Return -1 to indicate an error
-        }
+			// Selecting the count
+			criteriaQuery.select(criteriaBuilder.count(root)).where(predicate);
+
+			// Executing the query
+			Query<Long> query = currentSession.createQuery(criteriaQuery);
+			return query.getSingleResult();
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle the exception according to your application's needs
+			return 0L; // Return -1 to indicate an error
+		}
 	}
-		
-	
+
 	@Override
 	public List<User> getUserByFirstName(String firstName) {
 		return null;
@@ -215,18 +230,17 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public Role addRole(Role role) {
 		Role check;
-		try{
+		try {
 			Session session = sf.getCurrentSession();
 			check = this.getRoleById(role.getId());
-			if(check != null) {
+			if (check != null) {
 				check = null;
-			
-			}else {
+
+			} else {
 				session.save(role);
 				return role;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.info(e.getMessage());
 			check = null;
 		}
@@ -235,28 +249,22 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Role getRoleById(int roleId) {
-		
-		
+
 		try {
-			Session session= sf.getCurrentSession();
-			return  session.get(Role.class, roleId);
-			
-		}catch(Exception e) {
+			Session session = sf.getCurrentSession();
+			return session.get(Role.class, roleId);
+
+		} catch (Exception e) {
 			LOG.error(e);
-			 return null;
+			return null;
 		}
 	}
-
-	
-
-	
 
 	@Override
 	public void delete(User user) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public Optional<User> findByUserName(String userName) {
@@ -264,6 +272,4 @@ public class UserDaoImpl implements UserDao {
 		return Optional.empty();
 	}
 
-
-	
 }
