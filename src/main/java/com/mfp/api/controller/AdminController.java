@@ -121,8 +121,15 @@ public class AdminController {
 
 	@GetMapping(value = "/get-total-count-of-user-by-type/{type}")
 	public ResponseEntity<Long> getUsersTotalCountsByType(@PathVariable String type) {
-		return null;
-	}
+		Long usersTotalCounts = userService.getUsersTotalCounts(type);
+		
+		if(usersTotalCounts > 0) {           
+            return ResponseEntity.ok(usersTotalCounts);
+        }else {
+			throw new ResourceNotFoundException("user not exist for " + "type" + type);
+        }
+    }
+	
 
 	@GetMapping(value = "/get-total-count-of-user-by-date-and-type/{date}/{type}")
 	public ResponseEntity<Long> getUserCountByDateAndType(@PathVariable Date date, @PathVariable String type) {
