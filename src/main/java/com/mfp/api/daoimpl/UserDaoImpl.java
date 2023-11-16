@@ -214,9 +214,25 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<User> getUserByFirstName(String firstName) {
-		return null;
-	}
+		
+		List<User> list;
+	    try {
+	    	Session currentSession = sf.getCurrentSession();
+	        CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
+	        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 
+	        Root<User> root = criteriaQuery.from(User.class);
+	        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("firstname"), firstName));
+
+	        Query<User> query = currentSession.createQuery(criteriaQuery);
+	        list = query.getResultList();
+	    } catch (Exception e) {
+	       LOG.error(e);
+	       list = null;
+	    }
+	    return list;
+	}
+	
 	@Override
 	public boolean saveOtp(Otp otp) {
 		return false;
