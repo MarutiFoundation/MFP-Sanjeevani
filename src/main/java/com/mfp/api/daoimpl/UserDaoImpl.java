@@ -139,13 +139,14 @@ public class UserDaoImpl implements UserDao {
 
 		Session currentSession = sf.getCurrentSession();
 
-		try {
+		try{
 			CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
 			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 			Root<User> root = criteriaQuery.from(User.class);
 			criteriaQuery.select(root);
 			// return users; // if no record found in DB
-			return currentSession.createQuery(criteriaQuery).getResultList();
+			users = currentSession.createQuery(criteriaQuery).getResultList();
+			return users;
 		} catch (Exception e) {
 			LOG.error(e);
 			return users;
@@ -160,7 +161,22 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Long getUsersTotalCounts() {
-		return null;
+		Session currentSession = sf.getCurrentSession();
+		Long count = null;
+		try{
+			 CriteriaBuilder builder = currentSession.getCriteriaBuilder();
+		        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+		        Root<User> root = query.from(User.class);
+
+		        query.select(builder.count(root));
+		        
+		        return currentSession.createQuery(query).getSingleResult();
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return 0L;
+		}
+
 	}
 
 	@Override
