@@ -115,8 +115,9 @@ public class AdminController {
 	@GetMapping(value = "/get-total-count-of user")
 	public ResponseEntity<Long> getUsersTotalCounts() {
 		Long count = userService.getUsersTotalCounts();
+		
+			return new ResponseEntity<>(count, HttpStatus.OK);
 
-		return null;
 	}
 
 	@GetMapping(value = "/get-total-count-of-user-by-type/{type}")
