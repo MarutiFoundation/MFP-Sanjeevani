@@ -101,8 +101,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User getUserById(String id) {
-		return dao.getUserById(id);
+	public User getUserByUserName(String username) {
+		return dao.getUserByUserName(username);
 	}
 
 	@Override
@@ -111,10 +111,26 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User updateUser(User user) {
+	public User updateUser(String username , User user) {
+		User dbUser = this.dao.getUserByUserName(username);
+		if(dbUser == null) {
+			throw new ResourceNotFoundException("NO USER FOUND FOR USERNAME : " + user.getUsername());
+		}else {
 		String password = passwordEncoder.encode(user.getPassword());
-		user.setPassword(password);
-		return dao.updateUser(user);
+		dbUser.setPassword(password);
+		dbUser.setAnswer(user.getAnswer());
+		dbUser.setCity(user.getCity());
+		dbUser.setEmailid(user.getEmailid());
+		dbUser.setFirstname(user.getFirstname());
+		dbUser.setLastname(user.getLastname());
+		dbUser.setMobileno(user.getMobileno());
+		dbUser.setPincode(user.getPincode());
+		dbUser.setStreet(user.getStreet());
+		dbUser.setQuestion(user.getQuestion());
+		dbUser.setType(user.getType());
+		
+		return this.dao.updateUser(dbUser); // User | Null
+		}
 	}
 
 	@Override

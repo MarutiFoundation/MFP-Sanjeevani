@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mfp.api.entity.Appointment;
 import com.mfp.api.exception.ResourceNotFoundException;
+import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.service.AppointmentService;
+import com.mfp.api.serviceimpl.AppointmentServiceImp;
 
 @RestController
 @RequestMapping(value = "/appointment")
@@ -29,8 +31,18 @@ public class AppointmentController {
 
 	@PostMapping(value = "/add-appointment")
 	public ResponseEntity<Appointment> addAppointment(@RequestBody Appointment appointment) {
-		return null;
-	}
+	
+		Appointment addedAppointment = service.addAppointment(appointment);
+		
+		if (addedAppointment != null) {
+			LOG.info("Appointment Added !");
+			return new ResponseEntity<>(addedAppointment, HttpStatus.OK);
+		} else {
+			throw new SomethingWentWrongException("Something Went Wrong While Adding Appointment !");
+		}
+		}
+		
+	
 
 	@PutMapping(value = "/update-appointment")
 	public ResponseEntity<Appointment> updateAppointment(@RequestBody Appointment appointment) {
@@ -92,7 +104,13 @@ public class AppointmentController {
 
 	@GetMapping(value = "/get-all-appointments")
 	public ResponseEntity<List<Appointment>> getAllAppointments() {
-		return null;
+		List<Appointment> allAppointments = this.service.getAllAppointments();
+		
+		if(allAppointments == null) {
+			throw new ResourceNotFoundException("NO APPOINTMENTS ARE THERE...!");
+		}else {
+			return new ResponseEntity<>(allAppointments, HttpStatus.OK);
+		}
 	}
 
 	@GetMapping(value = "/get-top5-appointments")

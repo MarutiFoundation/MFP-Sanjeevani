@@ -18,7 +18,7 @@ public interface UserDao {
 
 	String deleteUser(String userName);
 
-	User getUserById(String id);
+	User getUserByUserName(String username);
 
 	List<User> getAllUsers();
 
@@ -43,6 +43,7 @@ public interface UserDao {
 	public Optional<User> findByUserName(String userName);
 
 	public void delete(User user);
+	
 	
 	
 

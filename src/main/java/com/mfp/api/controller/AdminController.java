@@ -71,9 +71,14 @@ public class AdminController {
 		}
 	}
 
-	@PutMapping("/update-user")
-	public ResponseEntity<User> updateUser(@RequestBody User user) {
-		return null;
+	@PutMapping("/update-user/{username}")
+	public ResponseEntity<User> updateUser(@PathVariable String username ,@RequestBody User user) {
+		User updateUser = userService.updateUser(username, user);
+		if(updateUser != null) {
+			return new ResponseEntity<>(updateUser, HttpStatus.FOUND);
+		}else {
+			throw new SomethingWentWrongException("UNABLE TO UPDATE USER...");
+		}
 	}
 
 	@GetMapping(value = "get-all-user", produces = "application/json")
@@ -85,6 +90,8 @@ public class AdminController {
 			throw new ResourceNotFoundException("user not found");
 		}
 	}
+	
+	
 
 	@ApiOperation("Get a specific entity by ID")
 	@ApiResponses({ @ApiResponse(code = 200, message = "Successfully Saved The Role"),
@@ -111,13 +118,13 @@ public class AdminController {
 			throw new ResourceNotFoundException("RESOURCE NOT FOUND FOR ID : " + roleId);
 		}
 	}
+	
+	
 
 	@GetMapping(value = "/get-total-count-of user")
 	public ResponseEntity<Long> getUsersTotalCounts() {
 		Long count = userService.getUsersTotalCounts();
-		
 			return new ResponseEntity<>(count, HttpStatus.OK);
-
 	}
 
 	@GetMapping(value = "/get-total-count-of-user-by-type/{type}")
@@ -152,6 +159,16 @@ public class AdminController {
 			return new ResponseEntity<>(list, HttpStatus.OK);
 		} else {
 			throw new ResourceNotFoundException("User Not Exists For Name : " + firstName);
+		}
+	}
+	
+	@GetMapping(value = "c{username}", produces = "application/json")
+	public ResponseEntity<User> getUserByUserName(@PathVariable String username) {
+		User user = userService.getUserByUserName(username);
+		if (user != null) {
+			return new ResponseEntity<>(user, HttpStatus.FOUND);
+		} else {
+			throw new ResourceNotFoundException("USER NOT EXIT WITH USER NAME : " + username);
 		}
 	}
 		

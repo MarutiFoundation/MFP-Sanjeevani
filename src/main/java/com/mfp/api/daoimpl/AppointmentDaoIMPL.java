@@ -3,9 +3,16 @@ package com.mfp.api.daoimpl;
 import java.sql.Date;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,12 +25,23 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 	@Autowired
 	private SessionFactory sf;
 
-	private static Logger LOG = LogManager.getLogger(AppointmentDao.class);
+	private static final Logger LOG = LogManager.getLogger(AppointmentDao.class);
 
 	@Override
 	public Appointment addAppointment(Appointment appointment) {
-		return null;
+		Session session = sf.getCurrentSession();
+		try {
+			 session.save(appointment);	
+			 return appointment;
+		}catch (Exception e) {
+			LOG.error(e);
+			return null;
+		}
+	   
 	}
+	      
+
+		
 
 	@Override
 	public Appointment updateAppointment(Appointment appointment) {
@@ -86,10 +104,25 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Appointment> getAllAppointments() {
-		return null;
+		List<Appointment> appointments = null;
+		Session session = this.sf.getCurrentSession();
+		try {
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<Appointment> criteriaQuery = criteriaBuilder.createQuery(Appointment.class);
+			Root<Appointment> root = criteriaQuery.from(Appointment.class);
+			criteriaQuery.select(root);
+			appointments = session.createQuery(criteriaQuery).getResultList();
+			
+			appointments.stream().forEach(MAMTA -> System.out.println(MAMTA));
+			
+			return appointments;
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return appointments;
+		}
 	}
 
 	@SuppressWarnings("unchecked")

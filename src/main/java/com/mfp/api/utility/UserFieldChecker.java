@@ -17,7 +17,7 @@ public class UserFieldChecker {
 	private UserDao dao;
 	
 	public boolean userAlreadyExists(User user) {
-		User isExist = dao.getUserById(user.getUsername());
+		User isExist = dao.getUserByUserName(user.getUsername());
 		if(isExist != null) {
 			return true;
 		}else {
