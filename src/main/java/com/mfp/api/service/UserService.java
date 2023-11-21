@@ -19,11 +19,11 @@ public interface UserService {
 
 	String deleteUser(String userName);
 
-	User getUserById(String id);
+	User getUserByUserName(String username);
 
 	List<User> getAllUsers();
 
-	User updateUser(User user);
+	User updateUser(String username , User user);
 
 	Long getUsersTotalCounts();
 

@@ -118,19 +118,15 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public User getUserById(String id) {
+	public User getUserByUserName(String username) {
 		Session session = sf.getCurrentSession();
-		User user;
-
 		try {
-
-			user = session.get(User.class, id);
+			return session.get(User.class, username);
 
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
-			user = null;
+			return null;
 		}
-		return user;
 	}
 
 	@Override
@@ -156,7 +152,15 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public User updateUser(User user) {
-		return null;
+		Session currentSession = sf.getCurrentSession();
+		try {
+			currentSession.saveOrUpdate(user);
+			return this.getUserByUserName(user.getUsername());
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return null;
+		}
 	}
 
 	@Override

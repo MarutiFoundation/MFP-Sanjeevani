@@ -1,7 +1,12 @@
 package com.mfp.api.serviceimpl;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +23,25 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public Appointment addAppointment(Appointment appointment) {
-		return null;
-	}
 
+		// Creating Appointment taken time
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
+		
+		// Creating AppointmentPatientId (17 DIGIT)
+		//String id = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new java.util.Date());
+		long id = System.currentTimeMillis();
+		
+		//Creating Appointment taken date
+		Date date = Date.valueOf(LocalDate.now());
+
+		appointment.setAppointmentpatientid(Long.toString(id));
+		appointment.setAppointmenttakentime(dtf.format(now));
+		appointment.setAppointmenttakendate(date);
+
+		return appointmentDao.addAppointment(appointment);
+	}
+		
 	@Override
 	public Appointment updateAppointment(Appointment appointment) {
 		return null;
@@ -79,8 +100,14 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public List<Appointment> getAllAppointments() {
-		return null;
+		 List<Appointment> allAppointments = this.appointmentDao.getAllAppointments();
+		 for (Appointment appointment : allAppointments) {			
+			appointment.setProblemdescription(appointment.getProblemdescription().toUpperCase());
+			appointment.setBillMade(appointment.getBillMade().toUpperCase());
+		}
+		 return allAppointments;
 	}
+	
 
 	@Override
 	public List<Appointment> getTop5AppointmentsByDate(Date date) {
