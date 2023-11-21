@@ -72,10 +72,27 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public List<Appointment> getAppointmentsByDate(Date date) {
-		return null;
+		List<Appointment> appointments = null;
+		Session session = this.sf.getCurrentSession();
+		try {
+			
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<Appointment> criteriaQuery = criteriaBuilder.createQuery(Appointment.class);
+			Root<Appointment> root = criteriaQuery.from(Appointment.class);
+			
+			criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("appointmentdate"), date));
+			
+			appointments = session.createQuery(criteriaQuery).getResultList();
+			return appointments;
+
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return appointments;	
+		}
 	}
 
 	@Override
@@ -114,8 +131,6 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 			Root<Appointment> root = criteriaQuery.from(Appointment.class);
 			criteriaQuery.select(root);
 			appointments = session.createQuery(criteriaQuery).getResultList();
-			
-			appointments.stream().forEach(MAMTA -> System.out.println(MAMTA));
 			
 			return appointments;
 			
