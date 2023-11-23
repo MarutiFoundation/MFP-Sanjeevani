@@ -31,7 +31,7 @@ public class AppointmentController {
 
 	@PostMapping(value = "/add-appointment")
 	public ResponseEntity<Appointment> addAppointment(@RequestBody Appointment appointment) {
-	// abcdefg
+
 		Appointment addedAppointment = service.addAppointment(appointment);
 		
 		if (addedAppointment != null) {
@@ -73,7 +73,12 @@ public class AppointmentController {
 
 	@GetMapping(value = "/get-appointment-by-apointmentdate")
 	public ResponseEntity<List<Appointment>> getAppointmentsByDate(@RequestParam Date appointmentDate) {
-		return null;
+		List<Appointment> list = this.service.getAppointmentsByDate(appointmentDate);
+		if (list != null) {
+			return new ResponseEntity<>(list, HttpStatus.OK);
+		} else {
+			throw new SomethingWentWrongException("NO APPOINTMENTS ARE THERE...!");
+		}
 	}
 
 	@GetMapping(value = "/get-count-by-appointment-date")

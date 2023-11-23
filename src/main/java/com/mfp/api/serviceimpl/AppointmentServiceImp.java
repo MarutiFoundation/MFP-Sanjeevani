@@ -70,7 +70,7 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public List<Appointment> getAppointmentsByDate(Date date) {
-		return null;
+		return this.appointmentDao.getAppointmentsByDate(date);
 	}
 
 	@Override
@@ -100,12 +100,7 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public List<Appointment> getAllAppointments() {
-		 List<Appointment> allAppointments = this.appointmentDao.getAllAppointments();
-		 for (Appointment appointment : allAppointments) {			
-			appointment.setProblemdescription(appointment.getProblemdescription().toUpperCase());
-			appointment.setBillMade(appointment.getBillMade().toUpperCase());
-		}
-		 return allAppointments;
+		 return this.appointmentDao.getAllAppointments();
 	}
 	
 
