@@ -49,7 +49,7 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public Appointment getAppointmentById(String appointmentId) {
-		return null;
+		return appointmentDao.getAppointmentById(appointmentId);
 	}
 
 	@Override

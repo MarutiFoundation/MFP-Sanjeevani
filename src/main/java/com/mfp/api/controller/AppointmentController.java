@@ -52,7 +52,15 @@ public class AppointmentController {
 
 	@GetMapping(value = "/get-appointment-by-id/{id}")
 	public ResponseEntity<Appointment> getAppointmentById(@PathVariable String id) {
-		return null;
+		Appointment appointmentById = service.getAppointmentById(id);
+		
+		if (appointmentById!=null) {
+			
+			return new ResponseEntity<>(appointmentById, HttpStatus.FOUND);
+			
+		} else {
+			throw new ResourceNotFoundException("Id does not exist in database");
+		}
 	}
 
 	@GetMapping(value = "/get-appointment-by-ids/{ids}")
