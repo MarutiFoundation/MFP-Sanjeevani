@@ -63,7 +63,14 @@ public class AppointmentController {
 	@GetMapping(value = "/get-appointment-by-drid-apointmentdate/{drid}/{date}")
 	public ResponseEntity<List<Appointment>> getAppointmentsByDoctorIdAndAppointmentDate(@PathVariable String drid,
 			@PathVariable Date date) {
-		return null;
+		List<Appointment> appointmentsByDoctorIdAndAppointmentDate = service.getAppointmentsByDoctorIdAndAppointmentDate(drid, date);
+		
+		if (appointmentsByDoctorIdAndAppointmentDate!=null) {
+			return new ResponseEntity<>(appointmentsByDoctorIdAndAppointmentDate,HttpStatus.FOUND);
+			
+		} else {
+			throw new ResourceNotFoundException("Dr.Id And Appointment-Date does not Exist in Database ");
+		}
 	}
 
 	@GetMapping(value = "/get-appointment-by-drid-and-apointmentdate-and-time")
