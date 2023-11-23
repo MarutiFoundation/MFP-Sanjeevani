@@ -103,7 +103,28 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Appointment> getAppointmentsByBillingDate(Date billingDate) {
-		return null;
+		List<Appointment> resultList=null;
+		
+		Session session= sf.getCurrentSession();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<Appointment> createQuery = criteriaBuilder.createQuery(Appointment.class);
+			Root<Appointment> root = createQuery.from(Appointment.class);
+			
+			createQuery.where(criteriaBuilder.equal(root.get("billingDate"),billingDate ));
+			resultList = session.createQuery(createQuery).getResultList();
+			
+			return resultList;
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return  resultList;
+			
+		}
+		
+
+		
 	}
 
 	@Override
