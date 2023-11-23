@@ -69,9 +69,31 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 	@Override
 	public List<Appointment> getAppointmentsByDoctorIdAndAppointmentDate(String doctorId, Date appointmentDate,
 			String appointmentTime) {
-		return null;
-	}
+		List<Appointment> resultSet=null;
+		
+		Session session =sf.getCurrentSession();
+		try {
+			
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<Appointment> criteriaQuery = criteriaBuilder.createQuery(Appointment.class);
+			Root<Appointment> root = criteriaQuery.from(Appointment.class);
+			
+			Predicate doctorIdPredicate = criteriaBuilder.equal(root.get("doctorid"), doctorId);
+	        Predicate datePredicate = criteriaBuilder.equal(root.get("appointmentdate"), appointmentDate);
+	        Predicate timePredicate = criteriaBuilder.equal(root.get("appointmenttime"), appointmentTime);
 
+	        criteriaQuery.where(doctorIdPredicate, datePredicate, timePredicate);
+
+	        return session.createQuery(criteriaQuery).getResultList();
+	    
+	
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return resultSet;
+			
+		}
+	}
 
 	@Override
 	public List<Appointment> getAppointmentsByDate(Date date) {

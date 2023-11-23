@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;import java.sql.Da
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,8 +69,20 @@ public class AppointmentController {
 	@GetMapping(value = "/get-appointment-by-drid-and-apointmentdate-and-time")
 	public ResponseEntity<List<Appointment>> getAppointmentsByDoctorIdAndAppointmentDate(@RequestParam String doctorId,
 			@RequestParam Date appointmentDate, @RequestParam String appointmentTime) {
-		return null;
+		 
+	List<Appointment> appointmentsByDoctorIdAndAppointmentDateTime = service.getAppointmentsByDoctorIdAndAppointmentDate(doctorId, appointmentDate, appointmentTime);
+	
+	if(appointmentsByDoctorIdAndAppointmentDateTime!= null) {
+		
+		return new ResponseEntity<>(appointmentsByDoctorIdAndAppointmentDateTime, HttpStatus.FOUND);
+		
+	} else {
+		throw new ResourceNotFoundException("DR.id, Appointment-date and time Does Not Exist");
+
 	}
+	}		
+		
+		
 
 	@GetMapping(value = "/get-appointment-by-apointmentdate")
 	public ResponseEntity<List<Appointment>> getAppointmentsByDate(@RequestParam Date appointmentDate) {
