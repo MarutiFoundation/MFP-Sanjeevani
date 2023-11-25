@@ -62,6 +62,19 @@ public class AppointmentController {
 			throw new ResourceNotFoundException("Id does not exist in database");
 		}
 	}
+	
+	@GetMapping(value = "/get-appointment-by-DRID/{dId}")
+	public ResponseEntity<Appointment> getAppointmentByDoctorId(@PathVariable String dId) {
+		Appointment appointmentByDoctorId = service.getAppointmentByDoctorId(dId);
+		
+		if (appointmentByDoctorId!=null) {
+			
+			return new ResponseEntity<>(appointmentByDoctorId, HttpStatus.FOUND);
+			
+		} else {
+			throw new ResourceNotFoundException("Doctor Id does not exist in database");
+		}
+	}
 
 	@GetMapping(value = "/get-appointment-by-ids/{ids}")
 	public ResponseEntity<List<Appointment>> getAppointmentsByPatientsIds(@PathVariable List<String> ids) {

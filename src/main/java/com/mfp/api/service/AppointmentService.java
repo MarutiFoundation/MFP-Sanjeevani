@@ -3,7 +3,9 @@ package com.mfp.api.service;
 import java.sql.Date; 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.mfp.api.entity.Appointment;
 
@@ -24,4 +26,5 @@ public interface AppointmentService {
 	Long getCountByTreatmentStatusAndBillingDate(String treatmentStatus, Date billingDate);
 	List<Appointment> getAllAppointments();
 	List<Appointment> getTop5AppointmentsByDate(Date date);
+	Appointment getAppointmentByDoctorId(String dId);
 }
