@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;import java.sql.Da
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,7 +52,15 @@ public class AppointmentController {
 
 	@GetMapping(value = "/get-appointment-by-id/{id}")
 	public ResponseEntity<Appointment> getAppointmentById(@PathVariable String id) {
-		return null;
+		Appointment appointmentById = service.getAppointmentById(id);
+		
+		if (appointmentById!=null) {
+			
+			return new ResponseEntity<>(appointmentById, HttpStatus.FOUND);
+			
+		} else {
+			throw new ResourceNotFoundException("Id does not exist in database");
+		}
 	}
 
 	@GetMapping(value = "/get-appointment-by-ids/{ids}")
@@ -62,14 +71,33 @@ public class AppointmentController {
 	@GetMapping(value = "/get-appointment-by-drid-apointmentdate/{drid}/{date}")
 	public ResponseEntity<List<Appointment>> getAppointmentsByDoctorIdAndAppointmentDate(@PathVariable String drid,
 			@PathVariable Date date) {
-		return null;
+		List<Appointment> appointmentsByDoctorIdAndAppointmentDate = service.getAppointmentsByDoctorIdAndAppointmentDate(drid, date);
+		
+		if (appointmentsByDoctorIdAndAppointmentDate!=null) {
+			return new ResponseEntity<>(appointmentsByDoctorIdAndAppointmentDate,HttpStatus.FOUND);
+			
+		} else {
+			throw new ResourceNotFoundException("Dr.Id And Appointment-Date does not Exist in Database ");
+		}
 	}
 
 	@GetMapping(value = "/get-appointment-by-drid-and-apointmentdate-and-time")
 	public ResponseEntity<List<Appointment>> getAppointmentsByDoctorIdAndAppointmentDate(@RequestParam String doctorId,
 			@RequestParam Date appointmentDate, @RequestParam String appointmentTime) {
-		return null;
+		 
+	List<Appointment> appointmentsByDoctorIdAndAppointmentDateTime = service.getAppointmentsByDoctorIdAndAppointmentDate(doctorId, appointmentDate, appointmentTime);
+	
+	if(appointmentsByDoctorIdAndAppointmentDateTime!= null) {
+		
+		return new ResponseEntity<>(appointmentsByDoctorIdAndAppointmentDateTime, HttpStatus.FOUND);
+		
+	} else {
+		throw new ResourceNotFoundException("DR.id, Appointment-date and time Does Not Exist");
+
 	}
+	}		
+		
+		
 
 	@GetMapping(value = "/get-appointment-by-apointmentdate")
 	public ResponseEntity<List<Appointment>> getAppointmentsByDate(@RequestParam Date appointmentDate) {

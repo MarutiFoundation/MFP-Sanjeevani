@@ -50,8 +50,19 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 
 	@Override
 	public Appointment getAppointmentById(String patientId) {
-		return null;
+		
+		Session session = sf.getCurrentSession();
+		Appointment appointment = null;
+		try {
+			appointment = session.get(Appointment.class, patientId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return appointment;
 	}
+
+		
+	
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -62,16 +73,55 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Appointment> getAppointmentsByDoctorIdAndAppointmentDate(String doctorId, Date appointmentDate) {
-		return null;
+		List<Appointment>appointments=null;
+		Session session=sf.getCurrentSession();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<Appointment> criteriaQuery = criteriaBuilder.createQuery(Appointment.class);
+			Root<Appointment> root = criteriaQuery.from(Appointment.class);
+			
+			Predicate doctorIdPredicate = criteriaBuilder.equal(root.get("doctorid"), doctorId);
+	        Predicate datePredicate = criteriaBuilder.equal(root.get("appointmentdate"), appointmentDate);
+	            
+	        criteriaQuery.where(doctorIdPredicate, datePredicate);
+	        return session.createQuery(criteriaQuery).getResultList();
+	        
+		} catch (Exception e) {
+			LOG.error(e);
+			return appointments;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Appointment> getAppointmentsByDoctorIdAndAppointmentDate(String doctorId, Date appointmentDate,
 			String appointmentTime) {
-		return null;
-	}
+		List<Appointment> resultSet=null;
+		
+		Session session =sf.getCurrentSession();
+		try {
+			
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<Appointment> criteriaQuery = criteriaBuilder.createQuery(Appointment.class);
+			Root<Appointment> root = criteriaQuery.from(Appointment.class);
+			
+			Predicate doctorIdPredicate = criteriaBuilder.equal(root.get("doctorid"), doctorId);
+	        Predicate datePredicate = criteriaBuilder.equal(root.get("appointmentdate"), appointmentDate);
+	        Predicate timePredicate = criteriaBuilder.equal(root.get("appointmenttime"), appointmentTime);
 
+	        criteriaQuery.where(doctorIdPredicate, datePredicate, timePredicate);
+
+	        return session.createQuery(criteriaQuery).getResultList();
+	    
+	
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return resultSet;
+			
+		}
+	}
 
 	@Override
 	public List<Appointment> getAppointmentsByDate(Date date) {
