@@ -112,4 +112,9 @@ public class AppointmentServiceImp implements AppointmentService {
 		return null;
 	}
 
+	@Override
+	public Appointment getAppointmentByDoctorId(String dId) {
+		return this.appointmentDao.getAppointmentByDoctorId(dId);
+	}
+
 }
