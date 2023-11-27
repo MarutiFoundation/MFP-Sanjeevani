@@ -179,8 +179,17 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 
 	@Override
 	public Long getAppointmentsTotalCount() {
-		return null;
-	}
+		Session session= sf.getCurrentSession();
+		 CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+	        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+	        Root<Appointment> root = criteriaQuery.from(Appointment.class);
+	        criteriaQuery.select(criteriaBuilder.count(root));
+
+	        return session.createQuery(criteriaQuery).getSingleResult();
+	    }
+	  
+	
 
 	@Override
 	public Long getCountByAppointmentTakenDate(Date appointmentTakenDate) {

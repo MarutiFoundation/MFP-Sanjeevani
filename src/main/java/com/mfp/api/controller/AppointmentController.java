@@ -143,9 +143,15 @@ public class AppointmentController {
 		
 
 	@GetMapping(value = "/get-count-of-appointments")
-	public ResponseEntity<Long> getAppointmentsTotalCount() {
-		return null;
-	}
+	public ResponseEntity<Long> getAppointmentsTotalCount() {	
+      try {
+    	  Long appointmentsTotalCount = service.getAppointmentsTotalCount();  
+    	  return ResponseEntity.ok(appointmentsTotalCount);
+	
+    } catch (Exception e) {
+    	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+    }
+      }
 
 	@GetMapping(value = "/get-count-by-appointmenttaken-date")
 	public ResponseEntity<Long> getCountByAppointmentTakenDate(@RequestParam Date appointmentTakenDate) {

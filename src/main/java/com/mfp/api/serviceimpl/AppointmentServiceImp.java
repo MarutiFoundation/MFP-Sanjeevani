@@ -88,7 +88,7 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public Long getAppointmentsTotalCount() {
-		return null;
+		return appointmentDao.getAppointmentsTotalCount();
 	}
 
 	@Override
