@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -45,23 +46,22 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 	public Appointment updateAppointment(Appointment appointment) {
 
 		Session session = sf.getCurrentSession();
-		boolean isUpdated = false;
 		try {
-			Appointment dbAppointment = getAppointmentById(appointment.getAppointmentpatientid());
+			Appointment dbAppointment = this.getAppointmentById(appointment.getAppointmentpatientid());
 			if (dbAppointment != null) {
-				session.update(appointment);
-				isUpdated = true;
+				session.delete(dbAppointment);
+				session.save(appointment);
+				boolean b = true;
+				return appointment;
+			}else {
+				return null;
 			}
 		} catch (Exception e) {
 			LOG.error(e);
-		}
-		if (isUpdated) {
-			return appointment;
-		} else {
 			return null;
 		}
-	}
 
+	}
 
 	@Override
 	public Appointment getAppointmentById(String patientId) {
@@ -218,21 +218,26 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 	@Override
 	public Long getCountByTreatmentStatusAndBillingDate(String treatmentStatus, Date billingDate) {
 		Session session = sf.getCurrentSession();
-		CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-
-		Root<Appointment> root = criteriaQuery.from(Appointment.class);
-		criteriaQuery.select(criteriaBuilder.count(root));
-		
-		Predicate predicate = criteriaBuilder.and(
-	            criteriaBuilder.equal(root.get(" treatmentstatus"), treatmentStatus),
-	            criteriaBuilder.equal(root.get("billingDate"), billingDate));
-	            
-	            criteriaQuery.where(predicate);
 
 	            try {
-	    			return session.createQuery(criteriaQuery).getSingleResult();
-	            } catch (NoResultException e) {
+	            	CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+	        		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+	        		Root<Appointment> root = criteriaQuery.from(Appointment.class);
+	        		
+	        		criteriaQuery.select(criteriaBuilder.count(root));
+
+	        		Predicate usernamePredicate = criteriaBuilder.equal(root.get("treatmentstatus"), treatmentStatus);
+	        		Predicate surnamePredicate = criteriaBuilder.equal(root.get("billingDate"), billingDate);
+
+	        		criteriaQuery.where(usernamePredicate, surnamePredicate);
+
+	        		TypedQuery<Long> query = session.createQuery(criteriaQuery);
+
+	        		return query.getSingleResult();
+
+	            } catch (Exception e) {
+	            	LOG.error(e);
 	                return 0L;
 	            }
 	        }
