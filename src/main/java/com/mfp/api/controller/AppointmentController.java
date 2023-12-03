@@ -47,7 +47,15 @@ public class AppointmentController {
 
 	@PutMapping(value = "/update-appointment")
 	public ResponseEntity<Appointment> updateAppointment(@RequestBody Appointment appointment) {
-		return null;
+		
+		Appointment updateAppointment = service.updateAppointment(appointment);
+		if(updateAppointment!=null) {
+			LOG.info("Appointment Updated !");
+			return new ResponseEntity<>(updateAppointment, HttpStatus.OK);
+		}
+	 else {
+		throw new ResourceNotFoundException("Something Went Wrong While Updating Appointment ! Appoint Not Found To Update");
+	 }
 	}
 
 	@GetMapping(value = "/get-appointment-by-id/{id}")
@@ -143,19 +151,48 @@ public class AppointmentController {
 		
 
 	@GetMapping(value = "/get-count-of-appointments")
-	public ResponseEntity<Long> getAppointmentsTotalCount() {
-		return null;
-	}
+	public ResponseEntity<Long> getAppointmentsTotalCount() {	
+      try {
+    	  Long appointmentsTotalCount = service.getAppointmentsTotalCount();  
+    	  return ResponseEntity.ok(appointmentsTotalCount);
+	
+    } catch (Exception e) {
+    	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+    }
+      }
 
 	@GetMapping(value = "/get-count-by-appointmenttaken-date")
 	public ResponseEntity<Long> getCountByAppointmentTakenDate(@RequestParam Date appointmentTakenDate) {
-		return null;
-	}
+		
+		try {
+			Long countByAppointmentTakenDate = service.getCountByAppointmentTakenDate(appointmentTakenDate);
+			
+			if (countByAppointmentTakenDate> 0) {
+                return ResponseEntity.ok(countByAppointmentTakenDate);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0L);
+            }
+		} catch (Exception e) {
+			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+        }
+		}
+		
+	
+
 
 	@GetMapping(value = "/get-count-by-treatmentstatus-and billingdate")
 	public ResponseEntity<Long> getCountByTreatmentStatusAndBillingDate(@RequestParam String treatmentStatus,
 			@RequestParam Date billingDate) {
-		return null;
+		
+		Long countByTreatmentStatusAndBillingDate = service.getCountByTreatmentStatusAndBillingDate(treatmentStatus, billingDate);
+		if (countByTreatmentStatusAndBillingDate>0) {
+			
+			return new ResponseEntity<>(countByTreatmentStatusAndBillingDate, HttpStatus.FOUND );
+		} else {
+			throw new ResourceNotFoundException(" treatment status and billing date does not exist in database ");
+
+		}
+	
 	}
 
 	@GetMapping(value = "/get-all-appointments")
@@ -170,7 +207,7 @@ public class AppointmentController {
 	}
 
 	@GetMapping(value = "/get-top5-appointments")
-	public ResponseEntity<List<Appointment>> getTop5AppointmentsByDate(@RequestParam Date date) {
+	public ResponseEntity<List<Appointment>> getTop5AppointmentsByDate(@RequestParam Date date) {// use limit also sort data into asc 1 to 10
 		return null;
 	}
 }

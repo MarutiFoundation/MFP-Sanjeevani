@@ -44,7 +44,8 @@ public class AppointmentServiceImp implements AppointmentService {
 		
 	@Override
 	public Appointment updateAppointment(Appointment appointment) {
-		return null;
+		return appointmentDao.updateAppointment(appointment);
+	
 	}
 
 	@Override
@@ -88,7 +89,7 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public Long getAppointmentsTotalCount() {
-		return null;
+		return appointmentDao.getAppointmentsTotalCount();
 	}
 
 	@Override
@@ -98,7 +99,8 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public Long getCountByTreatmentStatusAndBillingDate(String treatmentStatus, Date billingDate) {
-		return null;
+		return appointmentDao.getCountByTreatmentStatusAndBillingDate(treatmentStatus, billingDate);
+		
 	}
 
 	@Override

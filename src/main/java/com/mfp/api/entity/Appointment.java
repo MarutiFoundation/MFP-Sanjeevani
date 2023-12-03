@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Appointment {
+	
 	@Id
 	@Column(name = "AppointmentPatientId",unique = true,nullable = false)
 	private String appointmentpatientid;
@@ -147,4 +148,5 @@ public class Appointment {
 		this.billingDate = billingDate;
 	}
 
+	
 }
