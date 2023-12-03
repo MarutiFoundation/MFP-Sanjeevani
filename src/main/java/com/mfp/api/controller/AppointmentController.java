@@ -208,6 +208,15 @@ public class AppointmentController {
 
 	@GetMapping(value = "/get-top5-appointments")
 	public ResponseEntity<List<Appointment>> getTop5AppointmentsByDate(@RequestParam Date date) {// use limit also sort data into asc 1 to 10
-		return null;
+		
+		List<Appointment> top5AppointmentsByDate = this.service.getTop5AppointmentsByDate(date);
+		
+		if(top5AppointmentsByDate!=null) {
+			return new ResponseEntity<>(top5AppointmentsByDate, HttpStatus.FOUND);
+		}
+		else {
+			throw new ResourceNotFoundException("NO APPOITMENTS ARE THERE");
+		}
+		
 	}
 }

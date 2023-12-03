@@ -111,7 +111,9 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public List<Appointment> getTop5AppointmentsByDate(Date date) {
-		return null;
+		
+		 return this.appointmentDao.getTop5AppointmentsByDate(date);
+		
 	}
 
 	@Override
