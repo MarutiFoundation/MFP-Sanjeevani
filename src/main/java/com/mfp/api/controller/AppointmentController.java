@@ -207,7 +207,7 @@ public class AppointmentController {
 	}
 
 	@GetMapping(value = "/get-top5-appointments")
-	public ResponseEntity<List<Appointment>> getTop5AppointmentsByDate(@RequestParam Date date) { // use limit also sort data into asc 1 to 10
+	public ResponseEntity<List<Appointment>> getTop5AppointmentsByDate(@RequestParam Date date) {// use limit also sort data into asc 1 to 10
 		return null;
 	}
 }
