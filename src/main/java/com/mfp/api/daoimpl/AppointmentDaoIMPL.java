@@ -262,8 +262,29 @@ public class AppointmentDaoIMPL implements AppointmentDao {
 
 	@Override
 	public List<Appointment> getTop5AppointmentsByDate(Date date) {
-		return null;
-	}
+		Session session = this.sf.getCurrentSession();
+		List<Appointment> top5 = null;
+		try {
+			 	CriteriaBuilder builder = session.getCriteriaBuilder();
+	            CriteriaQuery<Appointment> criteriaQuery = builder.createQuery(Appointment.class);
+	            Root<Appointment> root = criteriaQuery.from(Appointment.class);
+
+	            criteriaQuery.select(root);
+	            criteriaQuery.where(builder.equal(root.get("appointmentdate"), date)); // Add your where condition here
+	            criteriaQuery.orderBy(builder.asc(root.get("appointmentpatientid"))); // Change the sorting criteria as needed
+
+	            TypedQuery<Appointment> query = session.createQuery(criteriaQuery).setMaxResults(5);
+
+	            top5 = query.getResultList();
+	            return top5;
+    
+		} catch (Exception e) {
+			LOG.error(e);
+			return top5;
+		}
+}
+	
+
 
 	@Override
 	public Appointment getAppointmentByDoctorId(String dId) {
