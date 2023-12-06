@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mfp.api.entity.User;
+import com.mfp.api.exception.ResourceNotFoundException;
+import com.mfp.api.exception.SomethingWentWrongException;
 import com.mfp.api.model.JwtResponse;
 import com.mfp.api.model.ResetPasswordDetail;
 import com.mfp.api.security.CustomUserDetailService;
@@ -66,7 +69,25 @@ public class AuthController {
 
 	@PostMapping(value = "/reset-password-by-otp")
 	public ResponseEntity<String> resetPasswordByOtp(@RequestBody ResetPasswordDetail detail) {
-		return null;
+		
+		User userName = this.userService.getUserByUserName(detail.getUserId());
+		if(userName != null){
+			String passwordByOtp = this.emailPasswordService.resetPasswordByOtp(detail);
+			if(passwordByOtp.equals("UPDATED")) {
+				return new ResponseEntity<>("PASSWORD UPDATED SUCCESSFULLY....", HttpStatus.OK);
+			}else if(passwordByOtp.equals("NOT UPDATED")) {
+				throw new SomethingWentWrongException("UNABLE TO RESET PASSWORD...");
+			}else if(passwordByOtp.equals("PasswordNotMatched")) {
+				throw new SomethingWentWrongException("NEW PASSWORD AND CONFIRM PASSWORD DOEST NOT MATCHED...");
+			}else if(passwordByOtp.equals("OTPERROR")) {
+				throw new SomethingWentWrongException("WRONG OTP...");
+			}else {
+				throw new SomethingWentWrongException("FETAL ERROR...");
+			}
+		}else{
+			throw new ResourceNotFoundException("USER NOT FOUND.. USER NAME : " + detail.getUserId());
+		}
+
 	}
 
 }

@@ -7,7 +7,6 @@ public class ResetPasswordDetail {
 	private String answer;
 	private String newPassword;
 	private String confirmPassword;
-
 	private int otp;
 
 	public ResetPasswordDetail() {
