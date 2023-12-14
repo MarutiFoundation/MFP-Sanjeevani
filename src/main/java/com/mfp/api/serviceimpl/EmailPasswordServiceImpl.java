@@ -40,8 +40,32 @@ public class EmailPasswordServiceImpl implements EmailPasswordService {
 	}
 
 	@Override
-	public String resetPasswordByQA(ResetPasswordDetail detail) {
-		return null;
+	public String resetPasswordByQA(ResetPasswordDetail detail) { // equals (Rohit - rohit) 
+			User user = this.userDao.getUserByUserName(detail.getUserId()); // used to update new user
+
+			
+				if(user.getQuestion().equalsIgnoreCase(detail.getQuestion())) {
+					if(user.getAnswer().equalsIgnoreCase(detail.getAnswer())) {
+						if(detail.getNewPassword().equals(detail.getConfirmPassword())) {
+							String encodedPassword = this.passwordEncoder.encode(detail.getNewPassword());
+							user.setPassword(encodedPassword);
+							User updateUser = this.userDao.updateUser(user);
+							if(updateUser != null) {
+								return "OK";
+							}else {
+								return "USER NOT UPDATED...."; 
+							}
+							
+						}else {
+							return "NEW PASSWORD AND CONFIRM PASSWORD NOT MATCHED...";
+						}
+					}else {
+						return "WROENG ANSWER...";
+					}
+				}else {
+					return "WROENG QUESTION...";
+				}
+			
 	}
 
 	@Override

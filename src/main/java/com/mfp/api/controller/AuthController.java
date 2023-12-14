@@ -62,10 +62,7 @@ public class AuthController {
     
     }
 
-	@PostMapping(value = "/reset-password-by-qa")
-	public ResponseEntity<String> resetPasswordByQA(@RequestBody ResetPasswordDetail detail) {
-		return null;
-	}
+
 
 	@PostMapping(value = "/reset-password-by-otp")
 	public ResponseEntity<String> resetPasswordByOtp(@RequestBody ResetPasswordDetail detail) {
@@ -88,6 +85,28 @@ public class AuthController {
 			throw new ResourceNotFoundException("USER NOT FOUND.. USER NAME : " + detail.getUserId());
 		}
 
+	}
+	
+	@PostMapping(value = "/reset-password-by-qa")
+	public ResponseEntity<String> resetPasswordByQA(@RequestBody ResetPasswordDetail detail) {
+		User userName = this.userService.getUserByUserName(detail.getUserId());
+		if(userName != null){
+			String msg = this.emailPasswordService.resetPasswordByQA(detail);
+			
+			if(msg.equals("OK")) {
+				return new ResponseEntity<String>("PASSWORD UPDATED SUCCESSFULY......." , HttpStatus.OK);
+			}else if(msg.equals("WROENG QUESTION...")) {
+				throw new SomethingWentWrongException("WROENG QUESTION...");
+			}else if(msg.equals("WROENG ANSWER...")) {
+				throw new SomethingWentWrongException("WROENG ANSWER...");
+			}else if(msg.equals("NEW PASSWORD AND CONFIRM PASSWORD NOT MATCHED...")) {
+				throw new SomethingWentWrongException("NEW PASSWORD AND CONFIRM PASSWORD NOT MATCHED...");
+			}else {
+				throw new SomethingWentWrongException("USER NOT UPDATED....");
+			}
+		}else{
+				throw new ResourceNotFoundException("USER NOT FOUND.. USER NAME : " + detail.getUserId());
+			}
 	}
 
 }
