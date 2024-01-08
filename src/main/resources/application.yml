@@ -23,12 +23,13 @@ logging:
 
 server:
   port: 8888
+  
 spring:
   application:
     name: MFP-SERVICES
   mail:
     host: smtp.gmail.com
-    password: ivmarmftryaeuzji
+    password: glld gtrb ipzq jzia
     port: 587
     properties:
       mail:
@@ -36,7 +37,7 @@ spring:
           auth: true
           starttls:
             enable: true
-    username: attendance2715@gmail.com
-
+    username: kapgatemam@gmail.com
+#attendance2715
 user:
   roles: ROLE_ADMIN,ROLE_DOCTOR,ROLE_PHARMACIST,ROLE_RECEPTIONIST
