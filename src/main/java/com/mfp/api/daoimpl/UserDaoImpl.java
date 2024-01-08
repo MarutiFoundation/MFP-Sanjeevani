@@ -255,12 +255,26 @@ public class UserDaoImpl implements UserDao {
 	
 	@Override
 	public boolean saveOtp(Otp otp) {
-		return false;
+		Session session = this.sf.getCurrentSession();
+		try {
+			session.save(otp);
+			return true;
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return false;
+		}
 	}
 
 	@Override
 	public Otp getOtpByUser(String userId) {
-		return null;
+		Session session = this.sf.getCurrentSession();
+		try {
+			return session.get(Otp.class, userId);
+		} catch (Exception e) {
+			LOG.error(e);
+			return null;
+		}
 	}
 
 	@Override
