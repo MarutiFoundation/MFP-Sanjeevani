@@ -1,6 +1,6 @@
 package com.mfp.api.daoimpl;
 
-import java.sql.Date;
+import java.sql.Date; 
 import java.util.List;
 import java.util.Optional;
 
@@ -133,23 +133,35 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<User> getAllUsers() {
-		List<User> users = null;
-
+		
 		Session currentSession = sf.getCurrentSession();
 
+		/*
+		 * try { CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
+		 * CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		 * Root<User> root = criteriaQuery.from(User.class); criteriaQuery.select(root);
+		 * // return users; // if no record found in DB users =
+		 * currentSession.createQuery(criteriaQuery).getResultList(); return users; }
+		 * catch (Exception e) { LOG.error(e); return users; }
+		 */
+		
+// Same code as above but we are calling stored procedure to get all users 
+		
 		try {
-			CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
-			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-			Root<User> root = criteriaQuery.from(User.class);
-			criteriaQuery.select(root);
-			// return users; // if no record found in DB
-			users = currentSession.createQuery(criteriaQuery).getResultList();
-			return users;
-		} catch (Exception e) {
+			// Create the stored procedure call
+			ProcedureCall procedureCall = currentSession.createStoredProcedureCall("getAllUsers");
+			
+		// Execute the stored procedure
+			procedureCall.execute();
+			
+		// Get the result
+			 return procedureCall.getResultList();
+			 
+		}catch (Exception e) {
 			LOG.error(e);
-			return users;
+			return null;
 		}
-
+		
 	}
 
 	@Override
