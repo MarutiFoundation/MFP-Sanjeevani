@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.procedure.ProcedureCall;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Component;
 
 import com.mfp.api.dao.UserDao;
@@ -17,6 +19,9 @@ public class UserFieldChecker {
 	private UserDao dao;
 	
 	public boolean userAlreadyExists(User user) {
+		// Unnecessary getting user object from db just to check its presence 
+		
+		System.out.println("INSIDE userAlreadyExists");
 		User isExist = dao.getUserByUserName(user.getUsername());
 		if(isExist != null) {
 			return true;
@@ -24,6 +29,8 @@ public class UserFieldChecker {
 			return false;
 		}
 	}
+	
+
 	
 	public Map<String, Map<String , String>> duplicateFields(User user){
 		

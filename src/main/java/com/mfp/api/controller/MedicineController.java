@@ -27,6 +27,7 @@ public class MedicineController {
 
 	@PostMapping(value = "/add-medicine")
 	public ResponseEntity<Medicine> addMedicine(@RequestBody Medicine medicine) {
+		Medicine addMedicine = medicineService.addMedicine(medicine);
 		return null;
 	}
 

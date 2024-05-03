@@ -44,7 +44,7 @@ public interface UserDao {
 
 	public void delete(User user);
 	
-	
+	public Boolean checExistProcedure(User user);
 	
 
 	

@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.ParameterMode;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -135,7 +137,7 @@ public class UserDaoImpl implements UserDao {
 
 		Session currentSession = sf.getCurrentSession();
 
-		try{
+		try {
 			CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
 			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 			Root<User> root = criteriaQuery.from(User.class);
@@ -156,7 +158,7 @@ public class UserDaoImpl implements UserDao {
 		try {
 			currentSession.saveOrUpdate(user);
 			return this.getUserByUserName(user.getUsername());
-			
+
 		} catch (Exception e) {
 			LOG.error(e);
 			return null;
@@ -167,15 +169,15 @@ public class UserDaoImpl implements UserDao {
 	public Long getUsersTotalCounts() {
 		Session currentSession = sf.getCurrentSession();
 		Long count = null;
-		try{
-			 CriteriaBuilder builder = currentSession.getCriteriaBuilder();
-		        CriteriaQuery<Long> query = builder.createQuery(Long.class);
-		        Root<User> root = query.from(User.class);
+		try {
+			CriteriaBuilder builder = currentSession.getCriteriaBuilder();
+			CriteriaQuery<Long> query = builder.createQuery(Long.class);
+			Root<User> root = query.from(User.class);
 
-		        query.select(builder.count(root));
-		        
-		        return currentSession.createQuery(query).getSingleResult();
-			
+			query.select(builder.count(root));
+
+			return currentSession.createQuery(query).getSingleResult();
+
 		} catch (Exception e) {
 			LOG.error(e);
 			return 0L;
@@ -234,32 +236,32 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<User> getUserByFirstName(String firstName) {
-		
+
 		List<User> list;
-	    try {
-	    	Session currentSession = sf.getCurrentSession();
-	        CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
-	        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		try {
+			Session currentSession = sf.getCurrentSession();
+			CriteriaBuilder criteriaBuilder = currentSession.getCriteriaBuilder();
+			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 
-	        Root<User> root = criteriaQuery.from(User.class);
-	        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("firstname"), firstName));
+			Root<User> root = criteriaQuery.from(User.class);
+			criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("firstname"), firstName));
 
-	        Query<User> query = currentSession.createQuery(criteriaQuery);
-	        list = query.getResultList();
-	    } catch (Exception e) {
-	       LOG.error(e);
-	       list = null;
-	    }
-	    return list;
+			Query<User> query = currentSession.createQuery(criteriaQuery);
+			list = query.getResultList();
+		} catch (Exception e) {
+			LOG.error(e);
+			list = null;
+		}
+		return list;
 	}
-	
+
 	@Override
 	public boolean saveOtp(Otp otp) {
 		Session session = this.sf.getCurrentSession();
 		try {
 			session.save(otp);
 			return true;
-			
+
 		} catch (Exception e) {
 			LOG.error(e);
 			return false;
@@ -322,4 +324,32 @@ public class UserDaoImpl implements UserDao {
 		return Optional.empty();
 	}
 
+	// This method is created for stored procedure
+	@Override
+	public Boolean checExistProcedure(User user) {
+		
+		System.out.println("INSIDE checExistProcedure");
+		
+		Session session = sf.getCurrentSession();
+		try {
+
+			// Create the stored procedure call
+			ProcedureCall procedureCall = session.createStoredProcedureCall("USEREXIST");
+
+			// Set procedure parameters
+			procedureCall.registerParameter("userName", String.class, ParameterMode.IN).bindValue(user.getUsername());
+			procedureCall.registerParameter("isExist", Boolean.class, ParameterMode.OUT);
+
+			// Execute the stored procedure
+			procedureCall.execute();
+
+			// Get the result
+			return (boolean) procedureCall.getOutputParameterValue("isExist");
+
+		} catch (Exception e) {
+			LOG.error(e);
+			return false;
+		}
+
+	}
 }
