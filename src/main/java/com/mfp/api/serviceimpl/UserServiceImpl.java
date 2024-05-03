@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
 		String encodePassword = passwordEncoder.encode(user.getPassword());
 		user.setPassword(encodePassword);	//SETTING ENCODED PASSWORD IN USER
 		
-		 boolean exists = checker.userAlreadyExists(user);
+		 boolean exists = this.dao.checExistProcedure(user);
 		 
 		 if(exists) {
 			 throw new SomethingWentWrongException("Something Went Wrong" + "\n" + "User Already Exist, UserName : " + user.getUsername());
