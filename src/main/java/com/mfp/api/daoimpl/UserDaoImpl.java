@@ -160,6 +160,7 @@ public class UserDaoImpl implements UserDao {
 		}catch (Exception e) {
 			LOG.error(e);
 			return null;
+			
 		}
 		
 	}
